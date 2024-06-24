@@ -33,6 +33,11 @@ function App() {
               className="shadow appearance-none border border-pink-300 rounded w-full py-2 px-3 text-pink-700 leading-tight focus:outline-none focus:shadow-outline focus:border-pink-500"
             />
           </div>
+          <div className="flex items-center justify-between">
+            <button type="submit" className="bg-pink-500 hover:bg-pink-600 text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline">
+              Submit
+            </button>
+          </div>
         </div>
       </form>
     </div>
