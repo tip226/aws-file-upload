@@ -8,6 +8,10 @@ function App() {
 
   const handleTextChange = (e) => setInputText(e.target.value);
   const handleFileChange = (e) => setSelectedFile(e.target.files[0]);
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+  };
+
 }
 
 export default App;
