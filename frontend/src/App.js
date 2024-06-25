@@ -4,6 +4,8 @@ import './index.css';
 import { Amplify } from 'aws-amplify';
 import { withAuthenticator, Button, Heading } from '@aws-amplify/ui-react';
 import awsconfig from './aws-exports';
+import { uploadData } from "aws-amplify/storage";
+
 Amplify.configure(awsconfig);
 
 function App({ signOut }) {
@@ -14,6 +16,27 @@ function App({ signOut }) {
   const handleFileChange = (e) => setSelectedFile(e.target.files[0]);
   const handleSubmit = async (e) => {
     e.preventDefault();
+    if (selectedFile) {
+      try {
+        const result = await uploadData({
+          key: selectedFile.name,
+          data: selectedFile,
+          options: {
+            contentType: selectedFile.type
+          }
+        }).result;
+        
+        console.log('Succeeded: ', result);
+        setInputText('');
+        setSelectedFile(null);
+        alert('File uploaded successfully!');
+      } catch (error) {
+        console.log('Error : ', error);
+        alert('Error uploading file. Please try again.');
+      }
+    } else {
+      alert('Please select a file to upload.');
+    }
   };
 
   return (
