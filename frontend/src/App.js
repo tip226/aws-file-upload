@@ -5,6 +5,8 @@ import { Amplify } from 'aws-amplify';
 import { withAuthenticator, Button, Heading } from '@aws-amplify/ui-react';
 import awsconfig from './aws-exports';
 import { uploadData } from "aws-amplify/storage";
+import { nanoid } from 'nanoid';
+import { fetchAuthSession } from '@aws-amplify/auth';
 
 Amplify.configure(awsconfig);
 
@@ -18,9 +20,11 @@ function App({ signOut }) {
     e.preventDefault();
     if (selectedFile) {
       try {
+        const id = nanoid();
         const bucketName = awsconfig.aws_user_files_s3_bucket;
-        const fileName = `${Date.now()}-${selectedFile.name}`;
-        const s3Path = `${bucketName}/${fileName}`;
+        // const fileName = `${Date.now()}-${selectedFile.name}`;
+        const fileName = `${id}-${selectedFile.name}`;
+        const filePath = `${bucketName}/${fileName}`;
 
         const result = await uploadData({
           key: `${fileName}.input`,
@@ -34,6 +38,38 @@ function App({ signOut }) {
         setInputText('');
         setSelectedFile(null);
         alert('File uploaded successfully!');
+
+        const session = await fetchAuthSession();
+        const idToken = session.tokens.idToken;
+        console.log("id token", idToken.toString());
+        console.log("access token", session.tokens.accessToken);
+
+        console.log("Request body: ", JSON.stringify({
+          id,
+          inputText,
+          inputFilePath: filePath,
+        }));
+
+        const response = await fetch('https://70uwj1tm04.execute-api.us-east-2.amazonaws.com/prod/s3-path', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+            'Authorization': idToken.toString(),
+          },
+          body: JSON.stringify({
+            id,
+            inputText,
+            inputFilePath: filePath,
+          }),
+        });
+
+        if (response.ok) {
+          alert('File uploaded and metadata saved successfully');
+          setInputText('');
+          setSelectedFile(null);
+        } else {
+          throw new Error('Failed to save metadata');
+        }
       } catch (error) {
         console.log('Error : ', error);
         alert('Error uploading file. Please try again.');
