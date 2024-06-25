@@ -18,8 +18,12 @@ function App({ signOut }) {
     e.preventDefault();
     if (selectedFile) {
       try {
+        const bucketName = awsconfig.aws_user_files_s3_bucket;
+        const fileName = `${Date.now()}-${selectedFile.name}`;
+        const s3Path = `${bucketName}/${fileName}`;
+
         const result = await uploadData({
-          key: selectedFile.name,
+          key: `${fileName}.input`,
           data: selectedFile,
           options: {
             contentType: selectedFile.type
