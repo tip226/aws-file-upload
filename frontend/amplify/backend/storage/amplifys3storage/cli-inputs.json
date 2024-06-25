@@ -1,0 +1,13 @@
+{
+  "resourceName": "amplifys3storage",
+  "policyUUID": "1a64193c",
+  "bucketName": "amplifyreactproject-pham",
+  "storageAccess": "auth",
+  "guestAccess": [],
+  "authAccess": [
+    "CREATE_AND_UPDATE",
+    "READ"
+  ],
+  "triggerFunction": "NONE",
+  "groupAccess": {}
+}
