@@ -22,7 +22,6 @@ function App({ signOut }) {
       try {
         const id = nanoid();
         const bucketName = awsconfig.aws_user_files_s3_bucket;
-        // const fileName = `${Date.now()}-${selectedFile.name}`;
         const fileName = `${id}-${selectedFile.name}`;
         const filePath = `${bucketName}/${fileName}`;
 
@@ -42,7 +41,8 @@ function App({ signOut }) {
         const session = await fetchAuthSession();
         const idToken = session.tokens.idToken;
         console.log("id token", idToken.toString());
-        console.log("access token", session.tokens.accessToken);
+        const email = session.tokens.idToken.payload.email;
+        console.log("email", email);
 
         console.log("Request body: ", JSON.stringify({
           id,
@@ -53,8 +53,8 @@ function App({ signOut }) {
         const response = await fetch('https://70uwj1tm04.execute-api.us-east-2.amazonaws.com/prod/s3-path', {
           method: 'POST',
           headers: {
+            'Authorization': idToken,
             'Content-Type': 'application/json',
-            'Authorization': idToken.toString(),
           },
           body: JSON.stringify({
             id,
@@ -62,6 +62,12 @@ function App({ signOut }) {
             inputFilePath: filePath,
           }),
         });
+
+        console.log('Response:', response);
+
+        console.log('Response status:', response.status);
+        const responseBody = await response.json();
+        console.log('Response body:', responseBody);
 
         if (response.ok) {
           alert('File uploaded and metadata saved successfully');
