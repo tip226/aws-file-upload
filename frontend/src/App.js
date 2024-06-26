@@ -16,6 +16,7 @@ function App({ signOut }) {
 
   const handleTextChange = (e) => setInputText(e.target.value);
   const handleFileChange = (e) => setSelectedFile(e.target.files[0]);
+  
   const handleSubmit = async (e) => {
     e.preventDefault();
     if (selectedFile) {
@@ -23,10 +24,11 @@ function App({ signOut }) {
         const id = nanoid();
         const bucketName = awsconfig.aws_user_files_s3_bucket;
         const fileName = `${id}-${selectedFile.name}`;
-        const filePath = `${bucketName}/${fileName}`;
+        const filePath = `${bucketName}/public/${fileName}`;
+        console.log('File path: ', filePath);
 
         const result = await uploadData({
-          key: `${fileName}.input`,
+          key: `${fileName}`,
           data: selectedFile,
           options: {
             contentType: selectedFile.type
